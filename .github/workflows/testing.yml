@@ -8,14 +8,9 @@ on:
 jobs:
   a_test_job:
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && !contains(join(' ', github.event.commits.*.message), 'hamburger')}}
+    if: ${{ github.event_name == 'push' && (join(!contains(github.event.commits.*.message), '#skip'))}}
     steps:
       - uses: actions/checkout@v2
-      - name: Debug condition
-        run: |
-          echo "Commit messages:"
-          echo "${{ toJson(github.event.commits.*.message) }}"
-          echo "Condition result: ${{ contains(join(' ', github.event.commits.*.message), 'hamburger') }}"
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
