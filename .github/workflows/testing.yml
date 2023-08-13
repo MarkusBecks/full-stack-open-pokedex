@@ -11,6 +11,11 @@ jobs:
     if: ${{ github.event_name == 'push' && !contains(join(' ', github.event.commits.*.message), '#skip')}}
     steps:
       - uses: actions/checkout@v2
+      - name: Debug condition
+        run: |
+          echo "Commit messages:"
+          echo "${{ toJson(github.event.commits.*.message) }}"
+          echo "Condition result: ${{ contains(join(' ', github.event.commits.*.message), '#skip') }}"
       - name: github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
