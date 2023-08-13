@@ -44,3 +44,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           DRY_RUN: true
+          SOURCE: ${{ github.workspace }}
