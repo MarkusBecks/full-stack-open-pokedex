@@ -21,7 +21,14 @@ jobs:
       - name: Check style
         run: npm run eslint
       - name: Build
-        run: npm run build
+        run: npm run build 
+      - name: Build Failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: Build Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Test
         run: npm run test
       - name: e2e tests
@@ -30,9 +37,16 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
-      - if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
-        name: deploy to Render
+      - name: deploy to Render
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip')}}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+      - name: Deploy success
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: Deployment succeeded!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
