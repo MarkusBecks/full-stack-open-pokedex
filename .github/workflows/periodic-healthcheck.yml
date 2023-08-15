@@ -1,0 +1,23 @@
+name: Periodic Healthcheck
+
+on:
+  schedule:
+  - cron: '*/60 * * * *'
+
+jobs:
+  periodic-healthcheck:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v3
+        with:
+          url: https://pokedex-2suw.onrender.com|https://pokedex-2suw.oafwewe3rt2nrender.com
+          max-attempts: 3 # Optional, defaults to 1
+          retry-delay: 5s 
+      - name: Health Check Failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: Health check failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
